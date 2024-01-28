@@ -1,0 +1,30 @@
+/* Adding the navbar styling */
+nav{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+nav .container_logo{
+    width: 170px;
+    margin: 15px;
+}
+  
+nav .container_logo .logo{
+    width: 30px;
+}
+  
+nav .button_nav{
+    color: #fff;
+    background-color: #fff;
+    font-size: 15px;
+    background: linear-gradient(45deg, #0066b2, #000);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.button_nav:hover { 
+    background: linear-gradient(214deg, #0066b2, #001a35);
+}
