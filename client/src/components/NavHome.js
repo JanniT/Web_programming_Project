@@ -7,7 +7,7 @@ const Nav = ({ min, authToken}) => {
     return (
         <nav>
             <div className="container_logo">
-                <img className="logo" src={min ? logo2 : logo1}></img>
+                <img className="logo" src={min ? logo1 : logo2}></img>
             </div>
 
             {/* Showing the button only if not logged in */}

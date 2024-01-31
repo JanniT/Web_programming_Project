@@ -12,11 +12,11 @@ const Nav = ({ min, authToken}) => {
 
     return (
         <nav>
-        <div className="container_logo">
-            <img className="logo" src={min ? logo1 : logo2} alt="Logo" />
-        </div>
+            <div className="container_logo">
+                <img className="logo" src={min ? logo1 : logo2} alt="Logo" />
+            </div>
 
-        <button className='button_nav' onClick={handleHomeClick}>Home</button>
+            <button className='button_nav' onClick={handleHomeClick}>Home</button>
         </nav>
     )
 }

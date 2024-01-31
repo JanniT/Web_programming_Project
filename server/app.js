@@ -23,7 +23,7 @@ mongoose.Promise = Promise
 const db = mongoose.connection
 
 db.on("error", console.error.bind(console, "MongoDB connection error"))
-db.on("connected", console.error.bind(console, "connect established"))
+db.on("connected", console.error.bind(console, "MongoDB connect established"))
 
 var app = express();
 

@@ -1,0 +1,20 @@
+/* adding the card css */
+.card {
+  border: 2px solid #0066b2;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 50px auto;
+  width: 50%; 
+}
+
+.card-buttons {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  padding: 8px 16px;
+  margin-right: 8px;
+  cursor: pointer;
+}

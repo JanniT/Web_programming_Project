@@ -1,4 +1,4 @@
-/* Adding the navbar styling */
+/* Adding the basic navbar styling */
 nav{
     width: 100%;
     display: flex;
@@ -27,4 +27,35 @@ nav .button_nav{
 
 .button_nav:hover { 
     background: linear-gradient(214deg, #0066b2, #001a35);
+}
+
+/* Adding the css of the dashborad navbar */
+nav .menu-container {
+    position: relative;
+}
+
+nav .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    background: #333;
+    border: 2px solid #0066b2;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav .dropdown-menu button {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    color: #fff; 
+    cursor: pointer;
+}
+
+nav .dropdown-menu button:hover {
+    background: #555; 
 }

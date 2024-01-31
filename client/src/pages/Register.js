@@ -30,7 +30,7 @@ const Register = () => {
                     return
                 }
 
-                const response = await fetch("/api/user/register/", {
+                const response = await fetch("/user/register/", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ firstName, surName, username, email, password, age })
@@ -89,9 +89,9 @@ const Register = () => {
                 <br/><br/>
 
                 <button id="form_button" className="button_main" type="submit">Register</button>
-            </form>
 
-            {errorMessage && (<div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>)}
+                {errorMessage && (<div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>)}
+            </form>
         </div>
         </>
     )

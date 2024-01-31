@@ -7,18 +7,52 @@ import "../css/Home.css"
 import "../index.css"
 
 const Home = () => {
-    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [authToken, setAuthToken] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const navigate = useNavigate()
 
-    const handleLogin = () => {
-        console.log('Login clicked')
-        setAuthToken(true)
+    const handleLogin = async (event) => {
+        event.preventDefault()
+    
+        if (email && password){
+            try {
+                const response = await fetch('/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+                })
 
+                if (response.status === 200) {
 
-        navigate("/dashboard")
+                    const { token } = await response.json()
+                    setAuthToken(token)
+
+                    // Saving the token in localStorage
+                    localStorage.setItem('authToken', token)
+
+                    // Redirect to the dashboard
+                    navigate('/dashboard')
+
+                } else {
+                    // Handle login failure
+                    console.error('Login failed')
+
+                    const errorData = await response.json()
+                    setErrorMessage(errorData.message || 'Login failed. Please check your credentials.')
+                    console.error('Login failed:', errorData)
+                }
+            } catch (error) {
+                console.error('Error during login:', error)
+            }
+        } else {
+            setErrorMessage('Please fill in all required fields.')
+            return
+        } 
     }
 
     const handleRegister = () => {
@@ -38,7 +72,7 @@ const Home = () => {
             <h1>DynaMingle</h1>
             <form className="form" onSubmit={handleLogin}>
                 <label htmlFor="email_address">Email address:</label>
-                <input type="text" id="username" placeholder='Email' value={username} onChange={(e) => setUsername(e.target.value)} />
+                <input type="text" id="email" placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
                 <br/>
 
                 <label htmlFor="password">Password: </label>
@@ -46,10 +80,12 @@ const Home = () => {
                 <br/>
 
                 <button id="form_button" className="button_main" type="submit">Login</button>
+
+                {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
             </form>
-            
+
             <div className="div_register">
-                <label htmlFor="email_address">New around here?</label>
+                <label htmlFor="registration">New around here?</label>
                 <button className="button_main" onClick={handleRegister}> Register </button>
                 <br/>
 

@@ -1,7 +1,8 @@
 var express = require('express')
 var router = express.Router()
 var bcrypt = require('bcryptjs')
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
+const jwt = require('jsonwebtoken')
 
 const validateToken = require("../middleware/validateToken")
 const validateRegister = require("../middleware/validateRegister")
@@ -18,7 +19,63 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Home' })
 })
 
-router.post("/api/user/register/", validateRegister, async(req,res) => {
+// HANDLING THE LOGIN 
+router.post('/user/login', async (req, res) => {
+  const { email, password } = req.body
+
+  try {
+    // Finding the user from the database via the email
+    const user = await Users.findOne({ email })
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const matchingPassword = await bcrypt.compare(password, user.password)
+
+    if (matchingPassword) {
+      // Creating a JWT token with the email in the payload
+      const token = jwt.sign({ email: user.email }, process.env.SECRET, {
+        expiresIn: '1h', 
+      })
+
+      res.status(200).json({ success: true, token })
+    } else {
+      res.status(401).json({ message: 'Invalid password' })
+    }
+  } catch (error) {
+    console.error('Error during login:', error)
+    res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+//HANDLING THE DASHBOARD (PRIVATE ROUTE)
+router.get("/dashboard", validateToken, async (req,res) => {
+  try {
+    // Fetching user details from the database based on the email stored in the token
+    const user = await Users.findOne({ email: req.user.email })
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // Returning the user info
+    res.status(200).json({
+      firstName: user.firstName,
+      surName: user.surName,
+      username: user.username,
+      email: user.email,
+      age: user.age,
+    })
+  } catch (error) {
+    console.error('Error fetching user details:', error)
+    res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+// HANDLING THE REGISTRATION
+router.post("/user/register/", validateRegister, async(req,res) => {
   //checking if any validation errors occur
   const errors = validationResult(req)
 
