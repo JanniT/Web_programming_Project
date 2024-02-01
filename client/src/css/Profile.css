@@ -1,0 +1,46 @@
+/* Profile pages css */
+.profile-container {
+    border: 2px solid #0066b2;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 50px auto;
+    width: 50%; 
+}
+
+.profile-header {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.profile-header h1 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.profile-body h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.profile-body {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.edit_button {
+    color: #fff;
+    background-color: #fff;
+    font-size: 15px;
+    background: linear-gradient(45deg, #0066b2, #000);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.bio_text {
+    display: flex;
+    border: none;
+    width: 100%;
+    border: 2px solid #0066b2;
+}

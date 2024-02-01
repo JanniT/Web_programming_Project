@@ -3,6 +3,7 @@ import Dashboard from './pages/Dashboard'
 import Register from './pages/Register'
 import Home from './pages/Home'
 import ChangePassword from './pages/ChangePassword'
+import Profile from './pages/Profile'
 import { BrowserRouter as Router, Route, Routes, BrowserRouter  } from 'react-router-dom'
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/forgot_password" element={<ChangePassword/>}/>
+        <Route path="/profile" element={<Profile/>}/>
       </Routes>
     </div>
     </BrowserRouter>

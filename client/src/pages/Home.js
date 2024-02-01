@@ -14,6 +14,9 @@ const Home = () => {
 
     const navigate = useNavigate()
 
+    // TO BE ADDED
+    // Checking if user is authenticated (if yes then they could not see this page)
+    
     const handleLogin = async (event) => {
         event.preventDefault()
     

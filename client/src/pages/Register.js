@@ -16,6 +16,9 @@ const Register = () => {
 
     const navigate = useNavigate()
 
+    // TO BE ADDED
+    // Checking if user is authenticated (if yes then they could not see this page)
+
     const handleRegister = async (event) => {
         event.preventDefault()
 

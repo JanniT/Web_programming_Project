@@ -25,6 +25,12 @@ const Nav = ({ min, authToken}) => {
 
     const handleProfile = () => {
         console.log("profile clicked")
+        navigate("/profile")
+    }
+    
+    const handleDashboard = () => {
+        console.log("Dashboard clicked")
+        navigate("/dashboard")
     }
 
     return (
@@ -37,8 +43,9 @@ const Nav = ({ min, authToken}) => {
                 <button className='button_nav' onClick={toggleDropdown}>☰</button>
                 {dropdownVisible && (
                     <div className="dropdown-menu">
-                        <button className='button_nav' onClick={handleSettings}>Settings</button>
+                        <button className='button_nav' onClick={handleDashboard}>Dashboard</button>
                         <button className='button_nav' onClick={handleProfile}>Profile</button>
+                        <button className='button_nav' onClick={handleSettings}>Settings</button>
                         <button className='button_nav' onClick={handleLogout}>Logout</button>
                     </div>
                 )}
