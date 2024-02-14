@@ -11,6 +11,8 @@ const Dashboard = () => {
 
     const [authenticated, setAuthenticated] = useState(false)
     const [userData, setUserData] = useState({})
+    const [likedUsers, setLikedUsers] = useState([])
+    const [matches, setMatches] = useState([])
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -22,6 +24,7 @@ const Dashboard = () => {
                     await fetchUserData()
                     setAuthenticated(true)
                 } else {
+                    setAuthenticated(false)
                     // Redirect to the login page if no valid token is found
                     navigate('/')
                 }
@@ -46,13 +49,11 @@ const Dashboard = () => {
             if (response.ok) {
                 const data = await response.json()
                 setUserData(data)
-                console.log(data)
-
             } else if (response.status === 401) {
                 // Token is invalid, redirect to login
                 navigate('/')
             } else {
-                const error = await response.json();
+                const error = await response.json()
                 console.error('Error fetching user details:', error)
             }
         } catch (error) {
@@ -62,26 +63,43 @@ const Dashboard = () => {
 
     // Displaying the data to the card
     const fetchContent = () => {
-        // Check if userData is an array with at least one element
+        // Checking if the userData is an array and has at least one element
         if (Array.isArray(userData) && userData.length > 0) {
 
-            // Extract the user data from the first element of the array
+            // Extracting the user data from the first element of the array
             const user = userData[0].data || userData[0]
 
-            return `${user.firstName} ${user.surName} - ${user.email} ${user.bio}`
+            // Checking if theres bio written
+            const bioDescription = user.bio ? user.bio : ""
+
+            return `${user.firstName} ${user.surName} - ${user.email} ${bioDescription}`
         } else {
-            // Handle the case where userData is not in the expected format
-            console.error('Invalid userData format:', userData)
-            return 'Error: Invalid user data format'
+            return 'NO MORE PEOPLE'
         }
     }
 
-    const handleLike = () => {
-        console.log('Liked')
+    const handleLike = async () => {
+        const user = userData[0].data
+        setLikedUsers([...likedUsers, user._id])
+        const response = await fetch('/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+            },
+            body: JSON.stringify({ userId: user._id }),
+        })
+        const data = await response.json()
+        if (data.matched) {
+            setMatches([...matches, user._id])
+        }
+        // Update userData state to remove the current user
+        setUserData(prevUserData => prevUserData.slice(1)) // Remove the first user
     }
     
     const handleDislike = () => {
         console.log('Disliked')
+        setUserData(prevUserData => prevUserData.slice(1))
     }
 
     return (

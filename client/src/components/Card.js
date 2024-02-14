@@ -8,8 +8,8 @@ const Card = ({ content, onLike, onDislike }) => {
                 {content}
             </div>
             <div className="card-actions">
-                <button onClick={onLike}>Like</button>
                 <button onClick={onDislike}>Dislike</button>
+                <button onClick={onLike}>Like</button>
             </div>
         </div>
     );

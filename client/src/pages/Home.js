@@ -59,7 +59,6 @@ const Home = () => {
     }
 
     const handleRegister = () => {
-        console.log('Register clicked')
         navigate("/register")
     }
 

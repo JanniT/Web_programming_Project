@@ -78,18 +78,54 @@ router.get("/profile", validateToken, async (req,res) => {
 // HANDLING THE DASHBOARD DATA FETCHING
 router.get("/dashboard", validateToken, async (req, res) => {
   try {
-    // Fetching all users from the database except the currently signed-in user
-    const users = await Users.find({ email: { $ne: req.user.email } }).limit(10)
+    const currentUser = await Users.findById(req.user._id)
 
-    // Returning the user info
+    // Fetching all users from the database except the currently signed-in user
+    const users = await Users.find({
+      // excluding users already liked and current user
+      _id: { $ne: req.user._id, $nin: currentUser.likes }, 
+    }).limit(10)
+
+    // Returning the user info along with the current user's ID
     res.status(200).json(users.map(user => ({
       data: user,
+      currentUserId: currentUser._id
     })))
   } catch (error) {
     console.error('Error fetching user details:', error)
     res.status(500).json({ message: 'Internal server error', error: error.message })
   }
 })
+
+// HANDLING THE LIKE
+router.post("/like", validateToken, async (req, res) => {
+  try {
+    const { userId } = req.body
+    const currentUser = await Users.findById(req.user._id)
+    const likedUser = await Users.findById(userId)
+
+    if (!likedUser) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    // Check if both users have liked each other
+    if (likedUser.likes.includes(req.user._id)) {
+      currentUser.matches.push(userId)
+      likedUser.matches.push(req.user._id)
+      await currentUser.save()
+      await likedUser.save()
+      return res.status(200).json({ matched: true })
+    } else {
+      // Not matched
+      currentUser.likes.push(userId)
+      await currentUser.save()
+      return res.status(200).json({ matched: false })
+    }
+  } catch (error) {
+    console.error("Error handling like:", error)
+    res.status(500).json({ message: "Internal server error", error: error.message })
+  }
+});
 
 // UPDATING THE USER BIO WITH PATCH
 router.patch("/user/bio", validateToken, async (req, res) => {

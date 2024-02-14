@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
     password: String,
     age: Number,
     bio: String,
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 })
-
 const User = mongoose.model('User', userSchema)
-
 module.exports = User
