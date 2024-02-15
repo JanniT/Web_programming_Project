@@ -1,11 +1,11 @@
 import logo1 from '../images/heart.png'
 import logo2 from '../images/heart2.png'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Nav = ({ min, authToken}) => {
     const [dropdownVisible, setDropdownVisible] = useState(false)
-
+    const location = useLocation()
     const navigate = useNavigate()
 
     // Handling the log out logic
@@ -24,12 +24,10 @@ const Nav = ({ min, authToken}) => {
     }
 
     const handleProfile = () => {
-        console.log("profile clicked")
         navigate("/profile")
     }
     
     const handleDashboard = () => {
-        console.log("Dashboard clicked")
         navigate("/dashboard")
     }
 
@@ -43,7 +41,11 @@ const Nav = ({ min, authToken}) => {
                 <button className='button_nav' onClick={toggleDropdown}>☰</button>
                 {dropdownVisible && (
                     <div className="dropdown-menu">
-                        <button className='button_nav' onClick={handleDashboard}>Dashboard</button>
+
+                        {/* Showing the dashboard button only if user is not in that page already */}
+                        {!location.pathname.includes("/dashboard") && (
+                            <button className='button_nav' onClick={handleDashboard}>Dashboard</button>
+                        )}
                         <button className='button_nav' onClick={handleProfile}>Profile</button>
                         <button className='button_nav' onClick={handleSettings}>Settings</button>
                         <button className='button_nav' onClick={handleLogout}>Logout</button>

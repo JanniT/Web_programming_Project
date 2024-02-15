@@ -11,7 +11,6 @@ const Dashboard = () => {
 
     const [authenticated, setAuthenticated] = useState(false)
     const [userData, setUserData] = useState({})
-    const [likedUsers, setLikedUsers] = useState([])
     const [matches, setMatches] = useState([])
     const navigate = useNavigate()
 
@@ -41,11 +40,11 @@ const Dashboard = () => {
             const response = await fetch('/dashboard', {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`,
                 },
             })
-      
+            
             if (response.ok) {
                 const data = await response.json()
                 setUserData(data)
@@ -78,27 +77,24 @@ const Dashboard = () => {
         }
     }
 
-    const handleLike = async () => {
+    const handleLike = () => handleInteraction('like')
+    const handleDislike = () => handleInteraction('dislike')
+
+    const handleInteraction = async (action) => {
         const user = userData[0].data
-        setLikedUsers([...likedUsers, user._id])
-        const response = await fetch('/like', {
+        const response = await fetch('/interaction', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem('authToken')}`,
             },
-            body: JSON.stringify({ userId: user._id }),
+            body: JSON.stringify({ userId: user._id, action }),
         })
         const data = await response.json()
         if (data.matched) {
             setMatches([...matches, user._id])
         }
         // Update userData state to remove the current user
-        setUserData(prevUserData => prevUserData.slice(1)) // Remove the first user
-    }
-    
-    const handleDislike = () => {
-        console.log('Disliked')
         setUserData(prevUserData => prevUserData.slice(1))
     }
 
@@ -111,8 +107,8 @@ const Dashboard = () => {
                         <h1>Dashboard</h1>
                         <Card
                             content={fetchContent()}
-                            onLike={handleLike}
-                            onDislike={handleDislike}
+                            onLike={Array.isArray(userData) && userData.length > 0 ? handleLike : null}
+                            onDislike={Array.isArray(userData) && userData.length > 0 ? handleDislike : null}
                         />
                         {/* Add more cards as needed */}
                     </div>

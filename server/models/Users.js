@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     age: Number,
     bio: String,
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    dislikes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     matches: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 })
 const User = mongoose.model('User', userSchema)

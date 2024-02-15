@@ -80,10 +80,9 @@ router.get("/dashboard", validateToken, async (req, res) => {
   try {
     const currentUser = await Users.findById(req.user._id)
 
-    // Fetching all users from the database except the currently signed-in user
+    // Fetching all users from the database except the currently signed-in user & the ones interacted with
     const users = await Users.find({
-      // excluding users already liked and current user
-      _id: { $ne: req.user._id, $nin: currentUser.likes }, 
+      _id: { $ne: req.user._id, $nin: [...currentUser.likes, ...currentUser.dislikes, ...currentUser.matches] },
     }).limit(10)
 
     // Returning the user info along with the current user's ID
@@ -97,35 +96,44 @@ router.get("/dashboard", validateToken, async (req, res) => {
   }
 })
 
-// HANDLING THE LIKE
-router.post("/like", validateToken, async (req, res) => {
+// HANDLING THE LIKE / DISLIKE INTERACTIONS
+router.post("/interaction", validateToken, async (req, res) => {
   try {
-    const { userId } = req.body
-    const currentUser = await Users.findById(req.user._id)
-    const likedUser = await Users.findById(userId)
+    const { userId, action } = req.body;
+    const currentUser = await Users.findById(req.user._id);
+    const targetUser = await Users.findById(userId);
 
-    if (!likedUser) {
-      return res.status(404).json({ message: "User not found" })
+    if (!targetUser) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if both users have liked each other
-    if (likedUser.likes.includes(req.user._id)) {
-      currentUser.matches.push(userId)
-      likedUser.matches.push(req.user._id)
-      await currentUser.save()
-      await likedUser.save()
-      return res.status(200).json({ matched: true })
-    } else {
-      // Not matched
+    if (action === "like") {
       currentUser.likes.push(userId)
       await currentUser.save()
-      return res.status(200).json({ matched: false })
+
+        // Check if both users have liked each other
+      if (targetUser.likes.includes(req.user._id)) {
+        currentUser.matches.push(userId)
+        targetUser.matches.push(req.user._id)
+        await currentUser.save()
+        await targetUser.save()
+        return res.status(200).json({ matched: true })
+      } else {
+        // Not matched
+        return res.status(200).json({ matched: false })
+      }
+    } else if (action === "dislike") {
+      currentUser.dislikes.push(userId)
+      await currentUser.save()
+      return res.status(200).json({ message: "User disliked successfully" })
+    } else {
+      return res.status(400).json({ message: "Invalid action" })
     }
   } catch (error) {
-    console.error("Error handling like:", error)
+    console.error("Error handling interaction:", error)
     res.status(500).json({ message: "Internal server error", error: error.message })
   }
-});
+})
 
 // UPDATING THE USER BIO WITH PATCH
 router.patch("/user/bio", validateToken, async (req, res) => {

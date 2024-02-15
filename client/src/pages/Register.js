@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import Nav from '../components/NavRegister'
 
@@ -16,8 +16,13 @@ const Register = () => {
 
     const navigate = useNavigate()
 
-    // TO BE ADDED
-    // Checking if user is authenticated (if yes then they could not see this page)
+    // Making sure that authenticated (logged in) users don't see this page
+    useEffect(() => {
+        const authToken = localStorage.getItem('authToken')
+        if (authToken) {
+            navigate('/dashboard')
+        }
+    }, [navigate])
 
     const handleRegister = async (event) => {
         event.preventDefault()
