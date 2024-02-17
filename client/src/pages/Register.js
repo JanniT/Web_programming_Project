@@ -2,7 +2,6 @@ import React, { useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import Nav from '../components/NavRegister'
 
-import "../css/Navbar.css"
 import "../index.css"
 
 const Register = () => {

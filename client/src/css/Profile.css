@@ -30,12 +30,16 @@
 .edit_button {
     color: #fff;
     background-color: #fff;
-    font-size: 15px;
+    font-size: 20px;
     background: linear-gradient(45deg, #0066b2, #000);
     border: none;
     padding: 5px 10px;
     border-radius: 10px;
     cursor: pointer;
+}
+
+.edit_button:hover { 
+    background: linear-gradient(214deg, #0066b2, #001a35);
 }
 
 .bio_text {

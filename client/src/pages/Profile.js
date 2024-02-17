@@ -2,7 +2,6 @@ import Nav from '../components/NavDashboard'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import "../css/Navbar.css"
 import "../css/Profile.css"
 import "../index.css"
 
@@ -108,6 +107,7 @@ const Profile = () => {
                             <h1>{userData.username}'s Profile</h1>
                             <p>Firstname: {userData.firstName}</p>
                             <p>Surname: {userData.surName}</p>
+                            <p>Email: {userData.email}</p>
                             <p>Age: {userData.age}</p>
                         </div>
                         <div className="profile-body">

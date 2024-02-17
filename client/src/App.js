@@ -4,6 +4,7 @@ import Register from './pages/Register'
 import Home from './pages/Home'
 import ChangePassword from './pages/ChangePassword'
 import Profile from './pages/Profile'
+import Chat from './pages/Chat'
 import { BrowserRouter as Router, Route, Routes, BrowserRouter  } from 'react-router-dom'
 
 const App = () => {
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/register" element={<Register/>}/>
         <Route path="/forgot_password" element={<ChangePassword/>}/>
         <Route path="/profile" element={<Profile/>}/>
+        <Route path="/chat" element={<Chat/>}/>
       </Routes>
     </div>
     </BrowserRouter>

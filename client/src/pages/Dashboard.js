@@ -1,11 +1,10 @@
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import Nav from '../components/NavDashboard'
 import Card from '../components/Card'
 
 import "../index.css"
-import "../css/Navbar.css"
-
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
 
@@ -71,7 +70,19 @@ const Dashboard = () => {
             // Checking if theres bio written
             const bioDescription = user.bio ? user.bio : ""
 
-            return `${user.firstName} ${user.surName} - ${user.email} ${bioDescription}`
+            return (
+                <div>
+                    <div>
+                        <span className="name">{user.firstName} {user.surName}</span>
+                    </div>
+                    <div>
+                        <span className="age">Age: {user.age}</span>
+                    </div>
+                    <div>
+                        <span className="bio">Bio: {bioDescription}</span>
+                    </div>
+            </div>
+            )
         } else {
             return 'NO MORE PEOPLE'
         }

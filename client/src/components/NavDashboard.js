@@ -3,6 +3,8 @@ import logo2 from '../images/heart2.png'
 import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
+import "../css/Navbar.css"
+
 const Nav = ({ min, authToken}) => {
     const [dropdownVisible, setDropdownVisible] = useState(false)
     const location = useLocation()
@@ -12,6 +14,7 @@ const Nav = ({ min, authToken}) => {
     const handleLogout = () => {
         // clearing the authentication token from localStorage & returning to home page
         localStorage.removeItem('authToken')
+        localStorage.removeItem('userId')
         navigate("/")
     }
 
@@ -31,6 +34,10 @@ const Nav = ({ min, authToken}) => {
         navigate("/dashboard")
     }
 
+    const handleChat = () => {
+        navigate("/chat")
+    }
+
     return (
         <nav>
             <div className="container_logo">
@@ -41,12 +48,12 @@ const Nav = ({ min, authToken}) => {
                 <button className='button_nav' onClick={toggleDropdown}>☰</button>
                 {dropdownVisible && (
                     <div className="dropdown-menu">
-
                         {/* Showing the dashboard button only if user is not in that page already */}
                         {!location.pathname.includes("/dashboard") && (
                             <button className='button_nav' onClick={handleDashboard}>Dashboard</button>
                         )}
                         <button className='button_nav' onClick={handleProfile}>Profile</button>
+                        <button className='button_nav' onClick={handleChat}>Chat</button>
                         <button className='button_nav' onClick={handleSettings}>Settings</button>
                         <button className='button_nav' onClick={handleLogout}>Logout</button>
                     </div>

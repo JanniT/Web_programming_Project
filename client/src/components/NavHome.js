@@ -2,6 +2,8 @@ import logo1 from '../images/heart.png'
 import logo2 from '../images/heart2.png'
 import React from 'react'
 
+import "../css/Navbar.css"
+
 const Nav = ({ min, authToken}) => {
 
     return (

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Nav from '../components/NavHome'
 import { useNavigate } from 'react-router-dom'
 
-import "../css/Navbar.css"
-import "../css/Home.css"
+import "../css/Register.css"
 import "../index.css"
 
 const Home = () => {
@@ -37,11 +36,13 @@ const Home = () => {
 
                 if (response.status === 200) {
 
-                    const { token } = await response.json()
+                    const { token, userId } = await response.json()
                     setAuthToken(token)
 
                     // Saving the token in localStorage
                     localStorage.setItem('authToken', token)
+
+                    localStorage.setItem('userId', userId)
 
                     // Redirect to the dashboard
                     navigate('/dashboard')
