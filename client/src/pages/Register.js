@@ -1,3 +1,5 @@
+// Checked how to upload images to database: https://developer.mozilla.org/en-US/docs/Web/API/FormData
+
 import React, { useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import Nav from '../components/NavRegister'
@@ -11,6 +13,7 @@ const Register = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [age, setAge] = useState('')
+    const [picture, setPicture] = useState(null)
     const [errorMessage, setErrorMessage] = useState('')
 
     const navigate = useNavigate()
@@ -23,6 +26,13 @@ const Register = () => {
         }
     }, [navigate])
 
+    
+    // Handling the picture input
+    const handlePictureChange = (event) => {
+        const file = event.target.files[0]
+        setPicture(file)
+    }
+
     const handleRegister = async (event) => {
         event.preventDefault()
 
@@ -30,17 +40,25 @@ const Register = () => {
         if (firstName && surName && username && email && password && age) {
             try {
             
-                // Checking that the age is positive number AND in limit of 0 to 100
+                // Checking that the age is positive number AND in limit of 18 to 100
                 const parsedAge = parseInt(age, 10)
-                if (isNaN(parsedAge) || parsedAge <= 0 || parsedAge > 100) {
+                if (isNaN(parsedAge) || parsedAge <= 17 || parsedAge > 100) {
                     setErrorMessage('Please enter a valid positive age')
                     return
                 }
 
+                const formData = new FormData()
+                formData.append('firstName', firstName)
+                formData.append('surName', surName)
+                formData.append('username', username)
+                formData.append('email', email)
+                formData.append('password', password)
+                formData.append('age', age)
+                formData.append('picture', picture)
+
                 const response = await fetch("/user/register/", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ firstName, surName, username, email, password, age })
+                    body: formData
                 })
 
                 if (response.status === 200) {
@@ -93,6 +111,10 @@ const Register = () => {
 
                 <label htmlFor="age">Age:</label>
                 <input type="number" id="age" placeholder='Age' value={age} onChange={(e) => setAge(e.target.value)} />
+                <br/><br/>
+
+                <label htmlFor="picture">Profile picture:</label>
+                <input type="file" id="picture" accept="image/*" onChange={handlePictureChange} />
                 <br/><br/>
 
                 <button id="form_button" className="button_main" type="submit">Register</button>

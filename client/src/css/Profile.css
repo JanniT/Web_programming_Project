@@ -36,6 +36,7 @@
     padding: 5px 10px;
     border-radius: 10px;
     cursor: pointer;
+    margin-right: 10px;
 }
 
 .edit_button:hover { 
@@ -47,4 +48,11 @@
     border: none;
     width: 100%;
     border: 2px solid #0066b2;
+}
+
+/* Added CSS for the user image */
+.profile-image{
+    max-width: 100%; /* Ensure the image fits the width of the card */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Apply border radius */
 }

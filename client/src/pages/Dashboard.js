@@ -11,6 +11,7 @@ const Dashboard = () => {
     const [authenticated, setAuthenticated] = useState(false)
     const [userData, setUserData] = useState({})
     const [matches, setMatches] = useState([])
+    const [userImage, setUserImage] = useState(null)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -47,6 +48,10 @@ const Dashboard = () => {
             if (response.ok) {
                 const data = await response.json()
                 setUserData(data)
+                
+                if (data.length > 0) {
+                    fetchUserImage(data[0].data._id)
+                }
             } else if (response.status === 401) {
                 // Token is invalid, redirect to login
                 navigate('/')
@@ -56,6 +61,26 @@ const Dashboard = () => {
             }
         } catch (error) {
             console.error('Error fetching user details:', error)
+        }
+    }
+
+    // Fetching the image if user has one 
+    const fetchUserImage = async (userId) => {
+        try {
+            const response = await fetch(`/user/image/${userId}`, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                },
+            })
+            if (response.ok) {
+                const imageData = await response.blob()
+                setUserImage(URL.createObjectURL(imageData))
+            } else {
+                console.error('Error fetching user image')
+            }
+        } catch (error) {
+            console.error('Error fetching user image:', error)
         }
     }
 
@@ -75,11 +100,12 @@ const Dashboard = () => {
                     <div>
                         <span className="name">{user.firstName} {user.surName}</span>
                     </div>
+                    {userImage && <img src={userImage} alt="User" />}
                     <div>
                         <span className="age">Age: {user.age}</span>
                     </div>
-                    <div>
-                        <span className="bio">Bio: {bioDescription}</span>
+                    <div className='bio_component'>
+                        <span className="bio">{bioDescription || ""}</span>
                     </div>
             </div>
             )

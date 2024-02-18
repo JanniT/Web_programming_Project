@@ -24,3 +24,23 @@
 .user_button:hover { 
   background: linear-gradient(214deg, #0066b2, #001a35);
 }
+
+.name,
+.age {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.bio_component {
+    font-size: 20px;
+    border: 2px solid #0066b2;
+    border-radius: 8px;
+    text-align: left;
+}
+
+/* Added CSS for the user image */
+.card img {
+  max-width: 100%;
+  height: auto; 
+  border-radius: 8px; 
+}

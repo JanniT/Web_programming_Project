@@ -3,6 +3,7 @@ var router = express.Router()
 var bcrypt = require('bcryptjs')
 const mongoose = require("mongoose")
 const jwt = require('jsonwebtoken')
+const multer = require('multer')
 
 const validateToken = require("../middleware/validateToken")
 const validateRegister = require("../middleware/validateRegister")
@@ -12,6 +13,7 @@ const { body, validationResult } = require('express-validator')
 
 const Users = require("../models/Users")
 const Chats = require("../models/Chats")
+const Images = require("../models/Images")
 
 require('dotenv').config()
 
@@ -20,8 +22,12 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Home' })
 })
 
+// Multer configuration for storing images
+const storage = multer.memoryStorage()
+const upload = multer({ storage })
+
 // HANDLING THE REGISTRATION
-router.post("/user/register/", validateRegister, async(req,res) => {
+router.post("/user/register/", upload.single('picture'), validateRegister, async(req,res) => {
   //checking if any validation errors occur
   const errors = validationResult(req)
 
@@ -69,6 +75,19 @@ router.post("/user/register/", validateRegister, async(req,res) => {
       })
 
       await newUser.save()
+
+      // Saving the profile picture
+      if (req.file) {
+        const { originalname, mimetype, buffer } = req.file
+        const newImage = new Images({
+            userId: newUser._id,
+            name: originalname,
+            encoding: 'base64',
+            mimetype,
+            buffer
+        })
+        await newImage.save()
+      }
   
       res.status(200).json({ message: "Registration successful"})
     } else {
@@ -136,7 +155,49 @@ router.get("/profile", validateToken, async (req,res) => {
   }
 })
 
-// HANDLING THE DASHBOARD DATA FETCHING
+// HANDLING THE IMAGE FETCHING 
+router.get('/user/image', validateToken, async (req, res) => {
+  try {
+    const userId = req.user._id
+    
+    // Find the user's image in the database
+    const image = await Images.findOne({ userId })
+
+    if (!image) {
+      return res.status(404).json({ message: 'Image not found' })
+    }
+
+    // Set appropriate headers
+    res.set('Content-Type', image.mimetype)
+    res.send(image.buffer)
+  } catch (error) {
+    console.error('Error fetching user image:', error)
+    res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+// Define a route for fetching user images
+router.get('/user/image/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId
+
+    // Find the user's image in the database based on user ID
+    const image = await Images.findOne({ userId })
+
+    if (!image) {
+      return res.status(404).json({ message: 'Image not found' })
+    }
+
+    // Set appropriate headers and send image buffer
+    res.set('Content-Type', image.mimetype)
+    res.send(image.buffer)
+  } catch (error) {
+    console.error('Error fetching user image:', error)
+    res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+// HANDLING THE DASHBOARD IMAGE FETCHING
 router.get("/dashboard", validateToken, async (req, res) => {
   try {
     const currentUser = await Users.findById(req.user._id)

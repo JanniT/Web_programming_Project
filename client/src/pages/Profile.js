@@ -10,6 +10,7 @@ const Profile = () => {
     const [userData, setUserData] = useState({})
     const [isEditing, setIsEditing] = useState(false)
     const [newBio, setNewBio] = useState('')
+    const [userImage, setUserImage] = useState(null)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -45,7 +46,7 @@ const Profile = () => {
             if (response.ok) {
                 const data = await response.json()
                 setUserData(data)
-
+                await fetchUserImage(data._id)
             } else if (response.status === 401) {
                 navigate('/')
             } else {
@@ -54,6 +55,28 @@ const Profile = () => {
             }
         } catch (error) {
             console.error('Error fetching user details:', error)
+        }
+    }
+
+    // Fetching the image if user has one 
+    const fetchUserImage = async () => {
+        try {
+            const response = await fetch('/user/image', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                },
+            })
+            if (response.ok) {
+                const imageData = await response.blob()
+                setUserImage(URL.createObjectURL(imageData))
+            } else if (response.status === 404) {
+                console.log('User does not have an image.')
+            } else {
+                console.error('Error fetching user image')
+            }
+        } catch (error) {
+            console.error('Error fetching user image:', error)
         }
     }
     
@@ -105,6 +128,7 @@ const Profile = () => {
                     <div className="profile-container">
                         <div className="profile-header">
                             <h1>{userData.username}'s Profile</h1>
+                            {userImage && <img src={userImage} className="profile-image" alt="User" />}
                             <p>Firstname: {userData.firstName}</p>
                             <p>Surname: {userData.surName}</p>
                             <p>Email: {userData.email}</p>
@@ -122,8 +146,8 @@ const Profile = () => {
                                         cols="50"
                                     />
                                     <br></br>
-                                    <button onClick={handleSaveClick}>Save</button>
-                                    <button onClick={handleCancelClick}>Cancel</button>
+                                    <button className='edit_button' onClick={handleSaveClick}>Save</button>
+                                    <button className='edit_button' onClick={handleCancelClick}>Cancel</button>
                                 </>
                             ) : (
                                 <>
