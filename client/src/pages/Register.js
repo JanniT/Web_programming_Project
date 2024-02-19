@@ -15,6 +15,7 @@ const Register = () => {
     const [age, setAge] = useState('')
     const [picture, setPicture] = useState(null)
     const [errorMessage, setErrorMessage] = useState('')
+    const [successMessage, setSuccessMessage] = useState(null)
 
     const navigate = useNavigate()
 
@@ -31,6 +32,13 @@ const Register = () => {
     const handlePictureChange = (event) => {
         const file = event.target.files[0]
         setPicture(file)
+    }
+
+    const handleMessageDisplay = (message) => {
+        setSuccessMessage(message)
+        setTimeout(() => {
+            setSuccessMessage(null)
+        }, 2000)
     }
 
     const handleRegister = async (event) => {
@@ -63,11 +71,11 @@ const Register = () => {
 
                 if (response.status === 200) {
                     const responseData = await response.json()
-                    console.log("Registration successful: ", responseData)
-
-                    //redirecting to the dashboard if success
-                    navigate("/dashboard")
-
+                    handleMessageDisplay(responseData.message)
+                    setTimeout(() => {
+                        navigate("/dashboard")
+                    }, 2000) 
+                    
                 } else {
                     const errorData = await response.json()
                     console.error('Failed to register ', response.status, response.statusText)
@@ -86,6 +94,7 @@ const Register = () => {
     return (
         <>
         <Nav/>
+        {successMessage && ( <div className="success-message">{successMessage}</div>)}
         <div className="container_register">
             <h1>Registration Form</h1>
             <form id="form" onSubmit={handleRegister}>

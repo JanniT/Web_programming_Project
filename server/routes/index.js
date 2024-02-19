@@ -156,7 +156,7 @@ router.get("/profile", validateToken, async (req,res) => {
 })
 
 // HANDLING THE IMAGE FETCHING FOR PROFILE
-router.get('/user/image', validateToken, async (req, res) => {
+router.get('/user/image/fetching', validateToken, async (req, res) => {
   try {
     const userId = req.user._id
     
@@ -173,6 +173,45 @@ router.get('/user/image', validateToken, async (req, res) => {
   } catch (error) {
     console.error('Error fetching user image:', error)
     res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+// HANDLING THE NEW PROFILE IMAGE UPLOAD
+router.post('/user/image', validateToken, upload.single('picture'), async (req, res) => {
+  try {
+      // Checking if file is uploaded
+      if (!req.file) {
+          return res.status(400).json({ message: 'No file uploaded' })
+      }
+
+      const userId = req.user._id;
+
+      // Checking if the user already has a profile picture
+      const existingImage = await Images.findOne({ userId })
+
+      // If the user has an existing profile picture, update it
+      if (existingImage) {
+          existingImage.name = req.file.originalname
+          existingImage.encoding = 'base64'
+          existingImage.mimetype = req.file.mimetype
+          existingImage.buffer = req.file.buffer
+          await existingImage.save()
+          return res.status(200).json({ message: 'Profile picture updated successfully' })
+      }
+
+      // If the user does not have an existing profile picture, save a new one
+      const newImage = new Images({
+          userId,
+          name: req.file.originalname,
+          encoding: 'base64',
+          mimetype: req.file.mimetype,
+          buffer: req.file.buffer
+      })
+      await newImage.save();
+      res.status(200).json({ message: 'Profile picture saved successfully' })
+  } catch (error) {
+      console.error('Error saving profile picture:', error)
+      res.status(500).json({ message: 'Internal server error', error: error.message })
   }
 })
 
@@ -338,6 +377,7 @@ router.patch("/user/bio", validateToken, async (req, res) => {
 
     // Returning the updated user info
     res.status(200).json({
+      message: 'User bio updated successfully',
       firstName: user.firstName,
       surName: user.surName,
       username: user.username,

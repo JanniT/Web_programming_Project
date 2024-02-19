@@ -18,6 +18,7 @@ const Chat = () => {
     const [newMessage, setNewMessage] = useState('')
     const [selectedUser, setSelectedUser] = useState(null)
     const [selectedUserName, setSelectedUserName] = useState('')
+    const [selectedUserImage, setSelectedUserImage] = useState(null);
     const [currentUserId, setCurrentUserId] = useState('')
     const navigate = useNavigate()
 
@@ -75,9 +76,42 @@ const Chat = () => {
     const handleChat = (userId, userName) => {
         setSelectedUser(userId)
         setSelectedUserName(userName)
-        console.log("Opened chat with: ", userId)
+
         fetchMessages(userId)
+
+        // Fetching the image of the selected user
+        fetchUserImage(userId)
     }    
+
+    // Fetching the user image of the selected user
+    const fetchUserImage = async (userId) => {
+        try {
+            const response = await fetch(`/user/image/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                },
+            })
+
+            if (response.ok) {
+                // Set the image URL in the state
+                const imageURL = URL.createObjectURL(await response.blob())
+                setSelectedUserImage(imageURL)
+            } else if (response.status === 404) {
+                // User image not found
+                setSelectedUserImage(null)
+            } else if (response.status === 401) {
+                // Token is invalid, redirect to login
+                navigate('/')
+            } else {
+                const error = await response.json();
+                console.error('Error fetching user image:', error)
+            }
+        } catch (error) {
+            console.error('Error fetching user image:', error)
+        }
+    }
 
     // Fetching the chat messages
     const fetchMessages = async (userId) => {
@@ -150,18 +184,20 @@ const Chat = () => {
                 <>
                     <Nav />
                     <div className="container_chat">
-                        <div className="row">
+                        <div className="container_row">
                             <MatchedUsers matches={matches} handleChat={handleChat} />
                             <div className="col">
-                                <div className="message-container">
-                                    <h2>Chat</h2>
+                                <h2>Chat</h2>
+                                {selectedUserImage && (
+                                    <img src={selectedUserImage} alt="Selected User" className="selected-user-image" />)}
+                                <p>Chatting with: {selectedUserName}</p>
+
+                                {selectedUser && (
+                                    <MessageHistory messages={messages} currentUserId={currentUserId} />)}
+
+                                <div className="messageSending">
                                     {selectedUser && (
-                                        <>
-                                            <p>Chatting with: {selectedUserName}</p>
-                                            <MessageHistory messages={messages} currentUserId={currentUserId} />
-                                            <MessageInput newMessage={newMessage} setNewMessage={setNewMessage} sendMessage={sendMessage} />
-                                        </>
-                                    )}
+                                        <><MessageInput newMessage={newMessage} setNewMessage={setNewMessage} sendMessage={sendMessage} /></>)}
                                 </div>
                             </div>
                         </div>

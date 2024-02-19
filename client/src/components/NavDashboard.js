@@ -48,12 +48,17 @@ const Nav = ({ min, authToken}) => {
                 <button className='button_nav' onClick={toggleDropdown}>☰</button>
                 {dropdownVisible && (
                     <div className="dropdown-menu">
-                        {/* Showing the dashboard button only if user is not in that page already */}
+                        {/* Showing the  button only if user is not in that page already */}
                         {!location.pathname.includes("/dashboard") && (
                             <button className='button_nav' onClick={handleDashboard}>Dashboard</button>
                         )}
-                        <button className='button_nav' onClick={handleProfile}>Profile</button>
-                        <button className='button_nav' onClick={handleChat}>Chat</button>
+                        
+                        {!location.pathname.includes("/profile") && (
+                            <button className='button_nav' onClick={handleProfile}>Profile</button>
+                        )}
+                        {!location.pathname.includes("/chat") && (
+                            <button className='button_nav' onClick={handleChat}>Chat</button>
+                        )}
                         <button className='button_nav' onClick={handleSettings}>Settings</button>
                         <button className='button_nav' onClick={handleLogout}>Logout</button>
                     </div>

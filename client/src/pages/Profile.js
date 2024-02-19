@@ -11,6 +11,9 @@ const Profile = () => {
     const [isEditing, setIsEditing] = useState(false)
     const [newBio, setNewBio] = useState('')
     const [userImage, setUserImage] = useState(null)
+    const [newUserImage, setNewUserImage] = useState(null)
+    const [successMessage, setSuccessMessage] = useState(null)
+    const [bioCharactersLeft, setBioCharactersLeft] = useState(1000)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -31,6 +34,12 @@ const Profile = () => {
         }
         checkAuth()
     }, [navigate])
+
+    useEffect(() => {
+        // Update the number of characters left when the bio changes
+        const charactersLeft = 1000 - newBio.length
+        setBioCharactersLeft(charactersLeft)
+    }, [newBio])
 
     // Fetching the user data to the user profile
     const fetchUserData = async () => {
@@ -61,7 +70,7 @@ const Profile = () => {
     // Fetching the image if user has one 
     const fetchUserImage = async () => {
         try {
-            const response = await fetch('/user/image', {
+            const response = await fetch('/user/image/fetching', {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('authToken')}`,
@@ -97,6 +106,8 @@ const Profile = () => {
                 // Update the local state with the new bio
                 const updatedUserData = await response.json()
                 setUserData(updatedUserData)
+                handleMessageDisplay(updatedUserData.message)
+
             } else if (response.status === 401) {
                 navigate('/')
             } else {
@@ -119,12 +130,55 @@ const Profile = () => {
         setNewBio(userData.bio || '')
         setIsEditing(false)
     }
-    
+
+    //Handling file change for the image input
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]
+        setNewUserImage(file)
+    }
+
+    const handleMessageDisplay = (message) => {
+        setSuccessMessage(message)
+        setTimeout(() => {
+            setSuccessMessage(null)
+        }, 2000)
+    }
+
+    // Handling the profile image upload
+    const handleNewImage = async () => {
+        try {
+            const formData = new FormData()
+            formData.append('picture', newUserImage)
+
+            const response = await fetch('/user/image', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                },
+                body: formData,
+            })
+
+            if (response.ok) {
+                // Refresh user data and image after successful upload
+                await fetchUserData()
+
+                const responseData = await response.json()
+
+                handleMessageDisplay(responseData.message)
+            } else {
+                console.error('Error uploading profile picture')
+            }
+        } catch (error) {
+            console.error('Error uploading profile picture:', error)
+        }
+    }
+
     return (
         <>
         {authenticated && (
                 <>
                     <Nav />
+                    {successMessage && (<div className="success-message">{successMessage}</div>)}
                     <div className="profile-container">
                         <div className="profile-header">
                             <h1>{userData.username}'s Profile</h1>
@@ -144,8 +198,10 @@ const Profile = () => {
                                         onChange={(e) => setNewBio(e.target.value)}
                                         rows="4"
                                         cols="50"
+                                        maxLength="1000"
                                     />
-                                    <br></br>
+                                    <p>Characters Left: {bioCharactersLeft}</p>
+                                    <br/>
                                     <button className='edit_button' onClick={handleSaveClick}>Save</button>
                                     <button className='edit_button' onClick={handleCancelClick}>Cancel</button>
                                 </>
@@ -156,6 +212,8 @@ const Profile = () => {
                                 </>
                             )}
                         </div>
+                        <input type="file" accept="image/*" onChange={handleFileChange} />
+                        <button className='edit_button' onClick={handleNewImage}>Update profile picture</button>
                     </div>
                 </>
             )}
