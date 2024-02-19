@@ -34,6 +34,15 @@ const Dashboard = () => {
         checkAuth()
     }, [navigate])
 
+    // Making sure that the image is fetched everytime the the user displayed is changed
+    useEffect(() => {
+        // Check if userData is not null and has at least one element
+        if (userData && userData.length > 0) {
+            const userId = userData[0].data._id
+            fetchUserImage(userId)
+        }
+    }, [userData])
+
     // fetching the user data to display on the dashboard
     const fetchUserData = async () => {
         try {
@@ -48,10 +57,6 @@ const Dashboard = () => {
             if (response.ok) {
                 const data = await response.json()
                 setUserData(data)
-                
-                if (data.length > 0) {
-                    fetchUserImage(data[0].data._id)
-                }
             } else if (response.status === 401) {
                 // Token is invalid, redirect to login
                 navigate('/')
@@ -74,8 +79,16 @@ const Dashboard = () => {
                 },
             })
             if (response.ok) {
-                const imageData = await response.blob()
-                setUserImage(URL.createObjectURL(imageData))
+                const contentType = response.headers.get("content-type")
+                if (contentType && contentType.startsWith('image')) {
+                    const imageData = await response.blob()
+                    setUserImage(URL.createObjectURL(imageData))
+                } else {
+                    setUserImage(null)
+                }
+            } else if (response.status === 404) {
+                // User image not found, set userImage to null
+                setUserImage(null)
             } else {
                 console.error('Error fetching user image')
             }

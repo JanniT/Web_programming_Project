@@ -155,7 +155,7 @@ router.get("/profile", validateToken, async (req,res) => {
   }
 })
 
-// HANDLING THE IMAGE FETCHING 
+// HANDLING THE IMAGE FETCHING FOR PROFILE
 router.get('/user/image', validateToken, async (req, res) => {
   try {
     const userId = req.user._id
@@ -176,19 +176,18 @@ router.get('/user/image', validateToken, async (req, res) => {
   }
 })
 
-// Define a route for fetching user images
+// FETCHING DASHBOARD IMAGES
 router.get('/user/image/:userId', async (req, res) => {
   try {
     const userId = req.params.userId
 
-    // Find the user's image in the database based on user ID
+    // Finding the user's image in the database based via ID
     const image = await Images.findOne({ userId })
 
     if (!image) {
       return res.status(404).json({ message: 'Image not found' })
     }
 
-    // Set appropriate headers and send image buffer
     res.set('Content-Type', image.mimetype)
     res.send(image.buffer)
   } catch (error) {
@@ -197,7 +196,7 @@ router.get('/user/image/:userId', async (req, res) => {
   }
 })
 
-// HANDLING THE DASHBOARD IMAGE FETCHING
+// HANDLING THE DASHBOARD USERDATA FETCHING
 router.get("/dashboard", validateToken, async (req, res) => {
   try {
     const currentUser = await Users.findById(req.user._id)

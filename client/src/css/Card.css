@@ -33,14 +33,18 @@
 
 .bio_component {
     font-size: 20px;
-    border: 2px solid #0066b2;
+    /* border: 2px solid #0066b2; */
     border-radius: 8px;
     text-align: left;
 }
 
 /* Added CSS for the user image */
 .card img {
-  max-width: 100%;
-  height: auto; 
-  border-radius: 8px; 
+  max-width: 100%; 
+    height: auto; 
+    max-height: 500px;
+    width: auto; 
+    border-radius: 8px; 
+    display: block; 
+    margin: 0 auto; 
 }
