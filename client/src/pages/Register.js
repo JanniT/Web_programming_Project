@@ -74,7 +74,7 @@ const Register = () => {
                     handleMessageDisplay(responseData.message)
                     setTimeout(() => {
                         navigate("/dashboard")
-                    }, 2000) 
+                    }, 1000) 
                     
                 } else {
                     const errorData = await response.json()

@@ -201,7 +201,6 @@ const Profile = () => {
                                         maxLength="1000"
                                     />
                                     <p>Characters Left: {bioCharactersLeft}</p>
-                                    <br/>
                                     <button className='edit_button' onClick={handleSaveClick}>Save</button>
                                     <button className='edit_button' onClick={handleCancelClick}>Cancel</button>
                                 </>

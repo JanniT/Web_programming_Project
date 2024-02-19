@@ -93,12 +93,12 @@
 }
   
 .success-message {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-background-color: #05810fef;
-padding: 10px;
-text-align: center;
-animation: slideIn 0.5s forwards, slideOut 0.5s forwards 2.5s;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #05810fef;
+    padding: 10px;
+    text-align: center;
+    animation: slideIn 0.5s forwards, slideOut 0.5s forwards 2.5s;
 }

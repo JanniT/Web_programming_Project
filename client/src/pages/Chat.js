@@ -190,8 +190,10 @@ const Chat = () => {
                                 <h2>Chat</h2>
                                 {selectedUserImage && (
                                     <img src={selectedUserImage} alt="Selected User" className="selected-user-image" />)}
-                                <p>Chatting with: {selectedUserName}</p>
-
+                                {selectedUser && (
+                                    <p>Chatting with: {selectedUserName}</p>
+                                )}
+                                
                                 {selectedUser && (
                                     <MessageHistory messages={messages} currentUserId={currentUserId} />)}
 
