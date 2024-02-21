@@ -6,7 +6,7 @@ I have a repository for this courses' exercises, which can be found via this [li
 
 ## Prerequisites
 - node.js and npm
-- mongodb
+- mongodb ```(mongodb://localhost:27017)```
 
 This app has been made with Node v18.18.2
 
