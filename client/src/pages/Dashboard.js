@@ -120,7 +120,7 @@ const Dashboard = () => {
                     <div className='bio_component'>
                         <span className="bio">{bioDescription || ""}</span>
                     </div>
-            </div>
+                </div>
             )
         } else {
             return 'NO MORE PEOPLE'

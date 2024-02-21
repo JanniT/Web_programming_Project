@@ -1,3 +1,4 @@
+/* CSS for the containers */
 .container_chat {
     display: flex;
     justify-content: center;
@@ -40,17 +41,17 @@
     scroll-margin-bottom: auto;
 }
 
-/* all scrollbar tracks */
+/* CSS for scrollbar*/
 .message-container {
     scrollbar-color: #353333 transparent; 
     scrollbar-width: thin;
 }
 
-/* crollbar thumb on hover */
 .message-container:hover {
     scrollbar-color: #1a1a1a transparent; 
 }
 
+/* CSS For buttons */
 .matched-users-container button,
 .send_button {
     color: #fff;
@@ -61,6 +62,7 @@
     cursor: pointer;
     width: 100%;
     text-align: left;
+    margin-bottom: 5px;
 }
 
 .matched-users-container button:hover,
@@ -68,6 +70,7 @@
     background: linear-gradient(214deg, #0066b2, #353333);
 }
 
+/* In detailed CSS for messages in the chat */
 .textbox {
     width: 100%;
     margin-top: 10px;
@@ -125,3 +128,35 @@
     height: auto;
     margin-bottom: 10px; 
 }
+
+/* CSS for the pager */
+.pager {
+    position: sticky;
+    bottom: 20px; /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0; /* Optionally, add padding */
+    z-index: 999; /* Ensure it appears above other content */
+}
+
+.pager button {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    /* color: #333; */
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.pager button.active {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow effect for the active page button */
+}
+
+.button_pager:hover { 
+    background: linear-gradient(214deg, #0066b2, #001a35);
+  }

@@ -1,4 +1,4 @@
-// https://react.dev/reference/react/useRef
+// I used this in help https://react.dev/reference/react/useRef
 
 import React, { useRef } from 'react'
 
@@ -34,11 +34,9 @@ const MessageInput = ({ newMessage, setNewMessage, sendMessage, maxRows = 5 }) =
                 onKeyPress={(event) => event.key === 'Enter' && handleSendMessage()}
                 rows={1}
                 maxLength={500}
-                style={{ maxHeight: `${maxRows * 1.5}em` }}
+                style={{ maxHeight: `${maxRows * 1.5}em`, minHeight: `${maxRows * 0.5}em` }}
             />
-            <button className="send_button" onClick={handleSendMessage}>
-                Send
-            </button>
+            <button className="send_button" onClick={handleSendMessage}>Send</button>
         </div>
     )
 }

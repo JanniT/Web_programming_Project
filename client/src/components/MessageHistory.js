@@ -1,4 +1,6 @@
+// I used these in help: 
 // https://react.dev/reference/react/useRef
+// https://stackoverflow.com/questions/18614301/keep-overflow-div-scrolled-to-bottom-unless-user-scrolls-up
 
 import React, { useRef, useEffect } from 'react'
 
