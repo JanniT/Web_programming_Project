@@ -142,10 +142,21 @@ const Dashboard = () => {
         })
         const data = await response.json()
         if (data.matched) {
+            // If matched, add user ID to matches
             setMatches([...matches, user._id])
+            // Prompt user to start chatting or continue swiping
+            const startChatting = window.confirm('You have a match! Do you want to start chatting now?')
+            if (startChatting) {
+                // If user wants to chat, navigate to chat page with the matched user's ID
+                navigate(`/chat`)
+            } else {
+                // If user wants to continue swiping, remove current user from display
+                setUserData(prevUserData => prevUserData.slice(1))
+            }
+        } else {
+            // // Update userData state to remove the current user
+            setUserData(prevUserData => prevUserData.slice(1))
         }
-        // Update userData state to remove the current user
-        setUserData(prevUserData => prevUserData.slice(1))
     }
 
     return (
