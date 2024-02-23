@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom'
 
 import Nav from '../components/NavDashboard'
 import Card from '../components/Card'
+import MessageInput from '../components/MessageInput'
+import ChatDashboard from '../components/ChatDashboard'
 
-import "../index.css"
+// import "../index.css"
+import "../css/ChatDashboard.css"
 
 const Dashboard = () => {
 
@@ -12,6 +15,11 @@ const Dashboard = () => {
     const [userData, setUserData] = useState({})
     const [matches, setMatches] = useState([])
     const [userImage, setUserImage] = useState(null)
+
+    const [showChat, setShowChat] = useState(false)
+    const [matchUser, setMatchUser] = useState(null)
+    const [messages, setMessages] = useState([])
+    const [newMessage, setNewMessage] = useState('')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -31,7 +39,7 @@ const Dashboard = () => {
                 console.error('Error checking authentication:', error)
             }
         }
-        checkAuth()
+        checkAuth() // eslint-disable-next-line
     }, [navigate])
 
     // Making sure that the image is fetched everytime the the user displayed is changed
@@ -103,7 +111,6 @@ const Dashboard = () => {
         if (Array.isArray(userData) && userData.length > 0) {
             // Extracting the user data from the first element of the array
             const user = userData[0].data || userData[0]
-            const userId = user._id
             return (
                 <div>
                     <div>
@@ -111,11 +118,49 @@ const Dashboard = () => {
                         <br />
                         <a href={`/profile/${user.username}`} className="username" onClick={(event) => { event.preventDefault(); navigate(`/profile/${user.username}`, { state: { user, userImage } }) }}>{user.username}</a>
                     </div>
-                    {userImage && <img src={userImage} alt="User" />}
+                    {/* Making sure that the image cannot be "painted" */}
+                    {userImage && <img src={userImage} alt="User" style={{ pointerEvents: 'none' }} />}
                 </div>
             )
         } else {
             return 'NO MORE PEOPLE'
+        }
+    }
+
+    // Handling the sending of a message to the match 
+    const sendMessage = async () => {
+        try {
+            if (!matchUser || !newMessage.trim()) {
+                // Inform the user that the message cannot be empty
+                console.error('Message or matchUser cannot be empty')
+                return
+            }
+
+            const response = await fetch('/message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+                },
+                body: JSON.stringify({
+                    userId: matchUser._id, // Sending message to the matched user
+                    content: newMessage.trim(), // Ensure 'content' is included
+                }),
+            })
+
+            if (response.ok) {
+                // Update the messages state after sending the message
+                setMessages([...messages, { content: newMessage.trim(), sender: 'user' }])
+                setNewMessage('')
+            } else if (response.status === 401) {
+                // Token is invalid, redirect to login
+                navigate('/')
+            } else {
+                const error = await response.json()
+                console.error('Error sending message:', error)
+            }
+        } catch (error) {
+            console.error('Error sending message:', error)
         }
     }
 
@@ -139,8 +184,11 @@ const Dashboard = () => {
             // Prompt user to start chatting or continue swiping
             const startChatting = window.confirm('You have a match! Do you want to start chatting now?')
             if (startChatting) {
-                // If user wants to chat, navigate to chat page with the matched user's ID
-                navigate(`/chat`)
+                setShowChat(true)
+                setMatchUser(user)
+                setMessages([])
+                // Remove matched user from potential matches
+                setUserData(prevUserData => prevUserData.slice(1))
             } else {
                 // If user wants to continue swiping, remove current user from display
                 setUserData(prevUserData => prevUserData.slice(1))
@@ -158,11 +206,24 @@ const Dashboard = () => {
                     <Nav />
                     <div className="container_dashboard">
                         <h1>Dashboard</h1>
-                        <Card
-                            content={<FetchContent userData={userData} userImage={userImage} navigate={navigate} />}
-                            onLike={Array.isArray(userData) && userData.length > 0 ? handleLike : null}
-                            onDislike={Array.isArray(userData) && userData.length > 0 ? handleDislike : null}
-                        />
+                        {showChat ? (
+                            <ChatDashboard
+                                matchUser={matchUser}
+                                onClose={() => setShowChat(false)}
+                                messages={messages}
+                            />
+                        ) : (
+                            <Card
+                                content={<FetchContent userData={userData} userImage={userImage} navigate={navigate} />}
+                                onLike={Array.isArray(userData) && userData.length > 0 ? handleLike : null}
+                                onDislike={Array.isArray(userData) && userData.length > 0 ? handleDislike : null}
+                            />
+                        )}
+                        {showChat && (
+                            <div className="message-input-container">
+                                <MessageInput newMessage={newMessage} setNewMessage={setNewMessage} sendMessage={sendMessage} />
+                            </div>
+                        )}
                     </div>
                 </>
             )}

@@ -1,9 +1,10 @@
 // I used this in help https://react.dev/reference/react/useRef
 
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
-const MessageInput = ({ newMessage, setNewMessage, sendMessage, maxRows = 5 }) => {
+const MessageInput = ({ newMessage, setNewMessage, sendMessage, maxRows = 5, maxChars = 500 }) => {
     const textareaRef = useRef(null)
+    const [charsLeft, setCharsLeft] = useState(maxChars)
 
     // adjusting the textarea height based on content
     const adjustTextareaHeight = () => {
@@ -14,8 +15,12 @@ const MessageInput = ({ newMessage, setNewMessage, sendMessage, maxRows = 5 }) =
 
     // handling the text area change
     const handleChange = (event) => {
-        setNewMessage(event.target.value)
-        adjustTextareaHeight()
+        const message = event.target.value
+        if (message.length <= maxChars) {
+            setNewMessage(message)
+            adjustTextareaHeight()
+            setCharsLeft(maxChars - message.length)
+        }
     }
 
     // sending message
@@ -23,6 +28,11 @@ const MessageInput = ({ newMessage, setNewMessage, sendMessage, maxRows = 5 }) =
         sendMessage()
         textareaRef.current.style.height = 'auto'
     }
+
+    // Effect to update characters left when new message is received
+    useEffect(() => {
+        setCharsLeft(maxChars - newMessage.length)
+    }, [newMessage, maxChars])
 
     return (
         <div className="message-input">
@@ -33,10 +43,13 @@ const MessageInput = ({ newMessage, setNewMessage, sendMessage, maxRows = 5 }) =
                 onChange={handleChange}
                 onKeyPress={(event) => event.key === 'Enter' && handleSendMessage()}
                 rows={1}
-                maxLength={500}
+                maxLength={maxChars}
                 style={{ maxHeight: `${maxRows * 1.5}em`, minHeight: `${maxRows * 0.5}em` }}
             />
-            <button className="send_button" onClick={handleSendMessage}>Send</button>
+            <div>
+                <span>{charsLeft} characters left</span>
+                <button className="send_button" onClick={handleSendMessage}>Send</button>
+            </div>
         </div>
     )
 }

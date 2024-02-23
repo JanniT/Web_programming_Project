@@ -1,0 +1,59 @@
+.chat-dashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    max-width: 100%;
+}
+
+.message-input-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.textbox {
+    flex: 1;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    min-height: 40px;
+    width: 100%;
+}
+
+.close_button{
+    color: #fff;
+    font-size: 15px;
+    background: linear-gradient(45deg, #0066b2, #353333);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: left;
+    margin-bottom: 5px;
+}
+
+/* CSS for the messages sent */
+.message-container {
+    scrollbar-color: #353333 transparent; 
+    scrollbar-width: thin;
+    width: 100%;
+}
+
+.user-message {
+    position: relative;
+    max-width: 70%;
+    padding: 8px;
+    margin: 5px;
+    text-align: justify;
+    max-width: 80%;
+    overflow-wrap: break-word; 
+    box-sizing: border-box;
+    white-space: pre-line;
+    background-color: #0066b2; 
+    border-radius: 5px; 
+    color: white;
+}
