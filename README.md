@@ -6,7 +6,7 @@ I have a repository for this courses' exercises, which can be found via this [li
 
 ## Prerequisites
 - node v18.18.2 and npm 
-- mongodb server v.7.0.2 on port ```(mongodb://localhost:27017)```
+- mongodb server v.7.0.2 on port ```mongodb://localhost:27017```
 
 ## Installation
 - Clone this repository
