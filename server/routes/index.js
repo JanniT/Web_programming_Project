@@ -71,7 +71,8 @@ router.post("/user/register/", upload.single('picture'), validateRegister, async
         "username": username,
         "email": email,
         "password": hashPassword,
-        "age": age
+        "age": age,
+        "isAdmin": false
       })
 
       await newUser.save()
@@ -120,7 +121,13 @@ router.post('/user/login', async (req, res) => {
         expiresIn: '1h', 
       })
 
-      res.status(200).json({ success: true, token, userId: user._id })
+      // Check if the user is an admin
+      if (user && user.isAdmin) {
+        // If the user is an admin, set isAdmin to true in the response
+        res.json({ token, userId: user._id, isAdmin: true })
+      } else {
+          res.json({ token, userId: user._id, isAdmin: false })
+      }
     } else {
       res.status(401).json({ message: 'Invalid password' })
     }
@@ -130,7 +137,7 @@ router.post('/user/login', async (req, res) => {
   }
 })
 
-//HANDLING THE DASHBOARD (PRIVATE ROUTE)
+//HANDLING THE USERDATA FETCHING FOR THE PROFILE
 router.get("/profile", validateToken, async (req,res) => {
   try {
     // Fetching user details from the database based on the email stored in the token
@@ -138,6 +145,11 @@ router.get("/profile", validateToken, async (req,res) => {
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
+    }
+
+    // Check if the user is an admin, and if so, return an empty response
+    if (user.isAdmin) {
+      return res.status(403).json({ message: 'Forbidden' })
     }
 
     // Returning the user info
@@ -167,6 +179,12 @@ router.get('/user/image/fetching', validateToken, async (req, res) => {
       return res.status(404).json({ message: 'Image not found' })
     }
 
+    // Check if the user is an admin, and if so, return an empty response
+    const user = await Users.findById(userId)
+    if (user.isAdmin) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
     // Set appropriate headers
     res.set('Content-Type', image.mimetype)
     res.send(image.buffer)
@@ -184,7 +202,7 @@ router.post('/user/image', validateToken, upload.single('picture'), async (req, 
           return res.status(400).json({ message: 'No file uploaded' })
       }
 
-      const userId = req.user._id;
+      const userId = req.user._id
 
       // Checking if the user already has a profile picture
       const existingImage = await Images.findOne({ userId })
@@ -207,7 +225,7 @@ router.post('/user/image', validateToken, upload.single('picture'), async (req, 
           mimetype: req.file.mimetype,
           buffer: req.file.buffer
       })
-      await newImage.save();
+      await newImage.save()
       res.status(200).json({ message: 'Profile picture saved successfully' })
   } catch (error) {
       console.error('Error saving profile picture:', error)
@@ -227,6 +245,12 @@ router.get('/user/image/:userId', async (req, res) => {
       return res.status(404).json({ message: 'Image not found' })
     }
 
+    // Check if the user is an admin, and if so, return an empty response
+    const user = await Users.findById(userId)
+    if (user.isAdmin) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
     res.set('Content-Type', image.mimetype)
     res.send(image.buffer)
   } catch (error) {
@@ -240,9 +264,15 @@ router.get("/dashboard", validateToken, async (req, res) => {
   try {
     const currentUser = await Users.findById(req.user._id)
 
+    // Check if the current user is an admin, and if so, return an empty response
+    if (currentUser.isAdmin) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+
     // Fetching all users from the database except the currently signed-in user & the ones interacted with
     const users = await Users.find({
       _id: { $ne: req.user._id, $nin: [...currentUser.likes, ...currentUser.dislikes, ...currentUser.matches] },
+      isAdmin: false 
     }).limit(10)
 
     // Returning the user info along with the current user's ID
@@ -299,6 +329,11 @@ router.post("/interaction", validateToken, async (req, res) => {
 router.get("/matches", validateToken, async (req, res) => {
   try {
     const currentUser = await Users.findById(req.user._id)
+
+    // Check if the current user is an admin, and if so, return an empty response
+    if (currentUser.isAdmin) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
     
     // Fetching users whose IDs are in the matches of the current user
     const matchedUsers = await Users.find({
@@ -388,6 +423,65 @@ router.patch("/user/bio", validateToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating user details:', error)
     res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+// HANDLING THE ADMIN USER FETCHING
+router.get('/admin/dashboard', async function(req, res, next){
+  try {
+    // Fetch all users from the database
+    const users = await Users.find({ isAdmin: false })
+    res.json(users)
+  } catch (error) {
+    console.error('Error fetching users:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
+// DELETE user by ID
+router.delete('/admin/users/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId
+
+    // Find the user to get the picture filename
+    const user = await Users.findById(userId)
+    
+    // Delete user from Users collection
+    await Users.findByIdAndDelete(userId)
+
+    // Delete associated chats from Chats collection
+    await Chats.deleteMany({ userId: userId })
+    
+    // Delete the user's image from the Images collection if it exists
+    if (user) {
+      await Images.deleteOne({ userId: userId })
+    }
+
+
+    res.status(200).json({ message: 'User and associated chats deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting user:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
+// PUT update user bio by ID
+router.put('/admin/users/:userId/bio', async (req, res) => {
+  try {
+    const userId = req.params.userId
+    const { bio } = req.body
+
+    // Update user's bio in the database
+    const updatedUser = await Users.findByIdAndUpdate(userId, { bio: bio }, { new: true })
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    res.status(200).json(updatedUser)
+  } catch (error) {
+    console.error('Error updating user bio:', error)
+    res.status(500).json({ message: 'Internal server error' })
   }
 })
 

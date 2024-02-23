@@ -16,8 +16,13 @@ const Home = () => {
     // Making sure that authenticated (logged in) users don't see this page
     useEffect(() => {
         const authToken = localStorage.getItem('authToken')
+        const isAdmin = localStorage.getItem('isAdmin')
         if (authToken) {
-            navigate('/dashboard')
+            if (isAdmin === "true") {
+                navigate('/admin/dashboard')
+            } else {
+                navigate('/dashboard')
+            }
         }
     }, [navigate])
     
@@ -36,7 +41,7 @@ const Home = () => {
 
                 if (response.status === 200) {
 
-                    const { token, userId } = await response.json()
+                    const { token, userId, isAdmin } = await response.json()
                     setAuthToken(token)
 
                     // Saving the token in localStorage
@@ -44,8 +49,17 @@ const Home = () => {
 
                     localStorage.setItem('userId', userId)
 
-                    // Redirect to the dashboard
-                    navigate('/dashboard')
+                    localStorage.setItem('isAdmin', isAdmin)
+
+                    if (isAdmin) {
+                        // Redirect to admin dashboard
+                        localStorage.setItem('isAdmin', isAdmin)
+                        navigate('/admin/dashboard')
+                    } else {
+                        // Redirect to regular user dashboard
+                        localStorage.setItem('isAdmin', isAdmin)
+                        navigate('/dashboard')
+                    }
 
                 } else {
                     // Handle login failure

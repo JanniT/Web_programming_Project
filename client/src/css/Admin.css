@@ -1,0 +1,49 @@
+.button_delete,
+.button_bio {
+    color: #fff;
+    background-color: #fff;
+    font-size: 20px;
+    background: linear-gradient(45deg, #0066b2, #000);
+    border: none;
+    padding: 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.user-list {
+    list-style-type: none;
+}
+
+.pager {
+    position: sticky;
+    bottom: 20px; /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0; /* Optionally, add padding */
+    z-index: 999; /* Ensure it appears above other content */
+}
+
+.button_pager {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+    /* color: #333; */
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.pager button.active {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); /* Add shadow effect for the active page button */
+}
+
+.button_pager:hover { 
+    background: linear-gradient(214deg, #0066b2, #001a35);
+}

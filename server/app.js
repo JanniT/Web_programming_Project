@@ -4,15 +4,20 @@ var cookieParser = require('cookie-parser')
 var logger = require('morgan')
 var cors = require("cors")
 const mongoose = require("mongoose")
+const bcrypt = require('bcryptjs')
+const User = require('./models/Users')
 
 var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/users')
 
-if (process.env.NODE_ENV === "developmnet") {
+var app = express()
+app.use(cors())
+
+if (process.env.NODE_ENV === "development") {
     var cors = {
         origin: "http://localhost:3000/",
         optionsSuccessStatus: 200,
-    };
+    }
     app.use(cors(corsOptions))
 }
 
@@ -25,15 +30,38 @@ const db = mongoose.connection
 db.on("error", console.error.bind(console, "MongoDB connection error"))
 db.on("connected", console.error.bind(console, "MongoDB connect established"))
 
-var app = express();
+// Admin account creation
+const createAdmin = async () => {
+    try {
+        const existingAdmin = await User.findOne({ email: 'admin@example.com' })
+        if (!existingAdmin) {
+            // Hash the password before saving
+            const hashedPassword = await bcrypt.hash('adminPassword!1', 10)
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+            const admin = new User({
+                email: 'admin@example.com',
+                password: hashedPassword, 
+                isAdmin: true
+            })
+            await admin.save()
+            console.log('Admin account created successfully:', admin)
+        } else {
+            console.log('Admin account already exists.')
+        }
+    } catch (error) {
+        console.error('Error creating admin account:', error)
+    }
+}
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+createAdmin()
 
-module.exports = app;
+app.use(logger('dev'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.use('/', indexRouter)
+app.use('/users', usersRouter)
+
+module.exports = app

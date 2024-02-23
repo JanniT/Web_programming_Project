@@ -6,6 +6,7 @@ import ChangePassword from './pages/ChangePassword'
 import Profile from './pages/Profile'
 import Chat from './pages/Chat'
 import ProfilePage from './components/ProfilePage'
+import DashboardAdmin from './pages/DashboardAdmin'
 import { BrowserRouter as Router, Route, Routes, BrowserRouter  } from 'react-router-dom'
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/profile/:username" element={<ProfilePage/>}/>
         <Route path="/chat" element={<Chat/>}/>
+        <Route path="/admin/dashboard" element={<DashboardAdmin/>}/>
       </Routes>
     </div>
     </BrowserRouter>
