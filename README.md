@@ -19,4 +19,4 @@ Run ```$ npm start``` in the server folder, to run the backend. This should conn
 
 Run ```$ npm start``` in the client folder, to run the front-end. This should connect to port ```http://localhost:3000/```
 
-Open the http://localhost:3000/[http://localhost:3000/] in your web browser to access the application
+Open the [http://localhost:3000/](http://localhost:3000/) in your web browser to access the application
