@@ -308,7 +308,7 @@ router.get("/matches", validateToken, async (req, res) => {
     // Extract necessary data from matched users
     const matchedUsersData = matchedUsers.map(user => ({
       userId: user._id,
-      userName: user.username // You can adjust this to fetch any other necessary data
+      userName: user.username
     }))
 
     // Respond with the matched users data

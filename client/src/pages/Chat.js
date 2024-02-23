@@ -18,7 +18,7 @@ const Chat = () => {
     const [newMessage, setNewMessage] = useState('')
     const [selectedUser, setSelectedUser] = useState(null)
     const [selectedUserName, setSelectedUserName] = useState('')
-    const [selectedUserImage, setSelectedUserImage] = useState(null);
+    const [selectedUserImage, setSelectedUserImage] = useState(null)
     const [currentUserId, setCurrentUserId] = useState('')
     const navigate = useNavigate()
 
@@ -77,10 +77,9 @@ const Chat = () => {
         setSelectedUser(userId)
         setSelectedUserName(userName)
 
-        fetchMessages(userId)
-
         // Fetching the image of the selected user
         fetchUserImage(userId)
+        fetchMessages(userId)
     }    
 
     // Fetching the user image of the selected user
@@ -105,7 +104,7 @@ const Chat = () => {
                 // Token is invalid, redirect to login
                 navigate('/')
             } else {
-                const error = await response.json();
+                const error = await response.json()
                 console.error('Error fetching user image:', error)
             }
         } catch (error) {

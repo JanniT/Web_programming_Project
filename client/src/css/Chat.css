@@ -65,8 +65,17 @@
     margin-bottom: 5px;
 }
 
+.profile-button{
+    color: #fff;
+    font-size: 15px;
+    background: linear-gradient(45deg, #0066b2, #353333);
+    border: none;
+    cursor: pointer;
+}
+
 .matched-users-container button:hover,
-.send_button:hover { 
+.send_button:hover,
+.profile-button:hover { 
     background: linear-gradient(214deg, #0066b2, #353333);
 }
 

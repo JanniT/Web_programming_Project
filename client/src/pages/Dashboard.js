@@ -98,28 +98,20 @@ const Dashboard = () => {
     }
 
     // Displaying the data to the card
-    const fetchContent = () => {
+    const FetchContent = ({ userData, userImage, navigate }) => {
         // Checking if the userData is an array and has at least one element
         if (Array.isArray(userData) && userData.length > 0) {
-
             // Extracting the user data from the first element of the array
             const user = userData[0].data || userData[0]
-
-            // Checking if theres bio written
-            const bioDescription = user.bio ? user.bio : ""
-
+            const userId = user._id
             return (
                 <div>
                     <div>
                         <span className="name">{user.firstName} {user.surName}</span>
+                        <br />
+                        <a href={`/profile/${user.username}`} className="username" onClick={(event) => { event.preventDefault(); navigate(`/profile/${user.username}`, { state: { user, userImage } }) }}>{user.username}</a>
                     </div>
                     {userImage && <img src={userImage} alt="User" />}
-                    <div>
-                        <span className="age">Age: {user.age}</span>
-                    </div>
-                    <div className='bio_component'>
-                        <span className="bio">{bioDescription || ""}</span>
-                    </div>
                 </div>
             )
         } else {
@@ -167,11 +159,10 @@ const Dashboard = () => {
                     <div className="container_dashboard">
                         <h1>Dashboard</h1>
                         <Card
-                            content={fetchContent()}
+                            content={<FetchContent userData={userData} userImage={userImage} navigate={navigate} />}
                             onLike={Array.isArray(userData) && userData.length > 0 ? handleLike : null}
                             onDislike={Array.isArray(userData) && userData.length > 0 ? handleDislike : null}
                         />
-                        {/* Add more cards as needed */}
                     </div>
                 </>
             )}
