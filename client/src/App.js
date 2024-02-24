@@ -1,3 +1,5 @@
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Dashboard from './pages/Dashboard'
 import Register from './pages/Register'
@@ -7,7 +9,7 @@ import Profile from './pages/Profile'
 import Chat from './pages/Chat'
 import ProfilePage from './components/ProfilePage'
 import DashboardAdmin from './pages/DashboardAdmin'
-import { BrowserRouter as Router, Route, Routes, BrowserRouter  } from 'react-router-dom'
+import Settings from './pages/Settings'
 
 const App = () => {
   return (
@@ -22,6 +24,7 @@ const App = () => {
         <Route path="/profile/:username" element={<ProfilePage/>}/>
         <Route path="/chat" element={<Chat/>}/>
         <Route path="/admin/dashboard" element={<DashboardAdmin/>}/>
+        <Route path="/settings" element={<Settings/>}/>
       </Routes>
     </div>
     </BrowserRouter>

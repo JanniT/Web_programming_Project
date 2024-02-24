@@ -111,8 +111,8 @@ const Home = () => {
                 <button className="button_main" onClick={handleRegister}> Register </button>
                 <br/>
 
-                <label htmlFor="forgot_password">Forgot password?</label>
-                <button className="button_main" onClick={handleForgotPassword}>Change password</button>
+                {/* <label htmlFor="forgot_password">Forgot password?</label>
+                <button className="button_main" onClick={handleForgotPassword}>Change password</button> */}
             </div>
         </div>
         </>

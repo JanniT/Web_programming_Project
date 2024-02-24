@@ -13,7 +13,7 @@ const Nav = ({ min, authToken}) => {
             </div>
 
             {/* Showing the button only if not logged in */}
-            {!authToken && !min && <button className='button_nav'>BUTTON FOR SOMETHING</button>}
+            {/* {!authToken && !min && <button className='button_nav'>BUTTON FOR SOMETHING</button>} */}
         </nav>
     )
 }

@@ -154,6 +154,7 @@ router.get("/profile", validateToken, async (req,res) => {
 
     // Returning the user info
     res.status(200).json({
+      _id: user._id,
       firstName: user.firstName,
       surName: user.surName,
       username: user.username,
@@ -423,6 +424,31 @@ router.patch("/user/bio", validateToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating user details:', error)
     res.status(500).json({ message: 'Internal server error', error: error.message })
+  }
+})
+
+// HANDLING THE USER ACCOUNT DELETING
+router.delete('/settings/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId
+
+    // Find the user to get the picture filename
+    const user = await Users.findById(userId)
+    
+    // Delete user from Users collection
+    await Users.findByIdAndDelete(userId)
+
+    // Delete associated chats from Chats collection
+    await Chats.deleteMany({ userId: userId })
+    
+    // Delete the user's image from the Images collection if it exists
+    if (user) {
+      await Images.deleteOne({ userId: userId })
+    }
+    res.status(200).json({ message: 'User and associated chats deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting user:', error)
+    res.status(500).json({ message: 'Internal server error' })
   }
 })
 

@@ -20,7 +20,7 @@ const Nav = ({ min, authToken}) => {
     }
 
     const handleSettings = () => {
-        console.log("Settings clicked")
+        navigate("/settings")
     }
 
     const toggleDropdown = () => {
@@ -60,7 +60,9 @@ const Nav = ({ min, authToken}) => {
                         {!location.pathname.includes("/chat") && (
                             <button className='button_nav' onClick={handleChat}>Chat</button>
                         )}
-                        <button className='button_nav' onClick={handleSettings}>Settings</button>
+                        {!location.pathname.includes("/settings") && (
+                            <button className='button_nav' onClick={handleSettings}>Settings</button>
+                        )}
                         <button className='button_nav' onClick={handleLogout}>Logout</button>
                     </div>
                 )}
