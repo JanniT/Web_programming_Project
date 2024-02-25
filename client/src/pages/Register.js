@@ -19,11 +19,16 @@ const Register = () => {
 
     const navigate = useNavigate()
 
-    // Making sure that authenticated (logged in) users don't see this page
+    // Making sure that authenticated (logged in and admins) users don't see this page
     useEffect(() => {
         const authToken = localStorage.getItem('authToken')
+        const isAdmin = localStorage.getItem('isAdmin')
         if (authToken) {
-            navigate('/dashboard')
+            if (isAdmin === 'true') {
+                navigate('/admin/dashboard')
+            } else {
+                navigate('/dashboard')
+            }
         }
     }, [navigate])
 

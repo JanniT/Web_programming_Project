@@ -6,15 +6,20 @@ import '../css/Settings.css'
 
 const Settings = () => {
     const [authenticated, setAuthenticated] = useState(false)
-    const [successMessage, setSuccessMessage] = useState(null)
+    const [message, setMessage] = useState({ type: null, content: null })
     const [userData, setUserData] = useState({})
+    const [newEmail, setNewEmail] = useState('')
+    const [newAge, setNewAge] = useState('')
+    const [showEmailInput, setShowEmailInput] = useState(false)
+    const [showAgeInput, setShowAgeInput] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
         const checkAuth = async () => {
             try {
                 const authToken = localStorage.getItem('authToken')
-                if (authToken) {
+                const isAdmin = localStorage.getItem('isAdmin')
+                if (authToken && isAdmin !== 'true') {
                     await fetchUserData()
                     setAuthenticated(true)
                 } else {
@@ -53,8 +58,9 @@ const Settings = () => {
 
     const handleDeleteAccount = async () => {
         try {
-            const response = await fetch(`/settings/${userData._id}`, {
-                method: 'DELETE'
+            const response = await fetch(`/settings/delete/${userData._id}`, {
+                method: 'DELETE',
+                Authorization: `Bearer ${localStorage.getItem('authToken')}`,
             })
     
             if (response.ok) {
@@ -64,7 +70,7 @@ const Settings = () => {
                 localStorage.removeItem('userId')
                 localStorage.removeItem('isAdmin')
 
-                handleMessageDisplay(responseData.message)
+                handleMessageDisplay('success', responseData.message)
                     setTimeout(() => {
                         navigate('/')
                     }, 2000) 
@@ -76,25 +82,117 @@ const Settings = () => {
         }
     }
 
-    const handleMessageDisplay = (message) => {
-        setSuccessMessage(message)
+    const handleUpdateEmail = async () => {
+        try {
+            const response = await fetch(`/settings/email/${userData._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                },
+                body: JSON.stringify({
+                    email: newEmail,
+                }),
+            })
+            const responseData = await response.json()
+            if (response.ok) {
+                setUserData(responseData.user)
+                setNewEmail('')
+                setShowEmailInput(false)
+            } else {
+                throw new Error(responseData.message || 'Failed to update email. Please try again later.')
+            }
+        } catch (error) {
+            console.error('Error updating email:', error)
+            handleMessageDisplay('error', error.message)
+        }
+    }
+
+    const handleUpdateAge = async () => {
+        try {
+            const response = await fetch(`/settings/age/${userData._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                },
+                body: JSON.stringify({
+                    age: newAge,
+                }),
+            })
+
+            const responseData = await response.json()
+            if (response.ok) {
+                setUserData(responseData.user)
+                setNewAge('')
+                setShowAgeInput(false)
+            } else {
+                throw new Error(responseData.message || 'Please provide a valid positive age.')
+            }
+        } catch (error) {
+            console.error('Error updating age:', error)
+            handleMessageDisplay('error', error.message)
+        }
+    }
+
+    const handleMessageDisplay = (type, content) => {
+        setMessage({ type, content })
         setTimeout(() => {
-            setSuccessMessage(null)
+            setMessage({ type: null, content: null })
         }, 3000)
     }
 
     return (
         <>
             <Nav />
-            {successMessage && <div className="success-message">{successMessage}</div>}
+            {message.type === 'success' && <div className="success-message">{message.content}</div>}
             <div>
                 <h2>User Settings</h2>
                 <p>Firstname: {userData.firstName}</p>
                 <p>Surname: {userData.surName}</p>
                 <p>Email: {userData.email}</p>
+                <p>Age: {userData.age}</p>
 
-                <button className='button_delete' onClick={handleDeleteAccount}>Delete Account</button>
+                <div className="button-column">
+                    {showEmailInput ? (
+                        <>
+                            <input
+                                type="email"
+                                placeholder="New Email"
+                                value={newEmail}
+                                onChange={(e) => setNewEmail(e.target.value)}
+                            />
+                            <button className="button" onClick={handleUpdateEmail}>Save Email</button>
+                            <button className="button" onClick={() => { setShowEmailInput(false); setNewEmail(''); }}>Cancel</button>
+                        </>
+                    ) : (
+                        <button className="button" onClick={() => setShowEmailInput(true)}>Update Email</button>
+                    )}
+                </div>
+
+                <div className="age-column">
+                    {showAgeInput ? (
+                        <>
+                            <input
+                                type="number"
+                                placeholder="New Age"
+                                value={newAge}
+                                onChange={(e) => setNewAge(e.target.value)}
+                            />
+                            <button className="button" onClick={handleUpdateAge}>Save Age</button>
+                            <button className="button" onClick={() => { setShowAgeInput(false); setNewAge(''); }}>Cancel</button>
+                        </>
+                    ) : (
+                        <button className="button" onClick={() => setShowAgeInput(true)}>Update Age</button>
+                    )}
+                </div>
+
+                <div className="button-column">
+                    <button className='button' onClick={handleDeleteAccount}>Delete Account</button>
+                </div>
             </div>
+
+            {message.type === 'error' && (<div style={{ color: 'red', marginTop: '10px' }}>{message.content}</div>)}
         </>
     )
 }

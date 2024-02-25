@@ -1,3 +1,6 @@
+// This file is not currently used as there is not implemented the forgotten password handling
+// and the button for this page are not shown on the main page
+
 import React, { useState } from 'react'
 import Nav from '../components/NavRegister'
 import { useNavigate } from 'react-router-dom'
@@ -9,7 +12,7 @@ const ChangePassword = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
-    const navigate = useNavigate()
+    // const navigate = useNavigate()
 
     // TO BE ADDED
     // Checking if user is authenticated (if yes then they could not see this page)

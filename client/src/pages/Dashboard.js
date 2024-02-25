@@ -27,7 +27,8 @@ const Dashboard = () => {
             try {
                 // Check if the user is authenticated to display the page or not
                 const authToken = localStorage.getItem('authToken')
-                if (authToken) {
+                const isAdmin = localStorage.getItem('isAdmin')
+                if (authToken && isAdmin !== 'true') {
                     await fetchUserData()
                     setAuthenticated(true)
                 } else {
@@ -116,6 +117,7 @@ const Dashboard = () => {
                     <div>
                         <span className="name">{user.firstName} {user.surName}</span>
                         <br />
+                        {/* making the username as a link to the profile page */}
                         <a href={`/profile/${user.username}`} className="username" onClick={(event) => { event.preventDefault(); navigate(`/profile/${user.username}`, { state: { user, userImage } }) }}>{user.username}</a>
                     </div>
                     {/* Making sure that the image cannot be "painted" */}

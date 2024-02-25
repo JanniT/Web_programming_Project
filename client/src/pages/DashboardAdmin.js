@@ -22,15 +22,20 @@ const DashboardAdmin = () => {
 
     // making sure that only admins see this page
     if (!authToken) {
-        navigate('/')
+      navigate('/')
     } else if (isAdmin !== "true") {
-        navigate('/')
+      navigate('/dashboard')
     }
 }, [navigate])
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/admin/dashboard')
+      const authToken = localStorage.getItem('authToken')
+      const response = await fetch('/admin/dashboard', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
       if (!response.ok) {
         throw new Error(`Failed to fetch users: ${response.status} ${response.statusText}`)
       }
@@ -76,12 +81,14 @@ const DashboardAdmin = () => {
 
   const updateUserBio = async (userId, newBio) => {
     try {
+      const authToken = localStorage.getItem('authToken')
       const response = await fetch(`/admin/users/${userId}/bio`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
         },
-        body: JSON.stringify({ bio: newBio })
+        body: JSON.stringify({ bio: newBio }),
       })
       if (!response.ok) {
         throw new Error(`Failed to update user bio: ${response.status} ${response.statusText}`)
@@ -103,15 +110,18 @@ const DashboardAdmin = () => {
 
   const deleteUser = async (userId) => {
     try {
+      const authToken = localStorage.getItem('authToken')
       const response = await fetch(`/admin/users/${userId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       })
       if (!response.ok) {
         throw new Error(`Failed to delete user: ${response.status} ${response.statusText}`)
       }
       // Remove the deleted user from the state
-      setUsers(users.filter(user => user._id !== userId))
-
+      setUsers(users.filter((user) => user._id !== userId))
     } catch (error) {
       console.error('Error deleting user:', error)
       setError(error.message)

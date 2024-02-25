@@ -17,12 +17,12 @@ const ProfilePage = () => {
             <NavProfilePage />
             <div className="profile-container">
                 <div className="profile-header">
-                    <h1>{user.firstName}</h1>
+                    <h1>{user.username}</h1>
                 </div>
                 <div className="profile-body">
+                    <h1>{user.firstName} {user.surName}</h1>
                     {userImage && <img className="profile-image" src={userImage} alt="User" />}
                     <p>Age: {user.age}</p>
-                    <p>Username: {user.username}</p>
                     <h2>Bio:</h2>
                     <p className="bio_text">{bioDescription}</p>
                 </div>

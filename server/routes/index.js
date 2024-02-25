@@ -235,7 +235,7 @@ router.post('/user/image', validateToken, upload.single('picture'), async (req, 
 })
 
 // FETCHING DASHBOARD IMAGES
-router.get('/user/image/:userId', async (req, res) => {
+router.get('/user/image/:userId', validateToken, async (req, res) => {
   try {
     const userId = req.params.userId
 
@@ -428,7 +428,7 @@ router.patch("/user/bio", validateToken, async (req, res) => {
 })
 
 // HANDLING THE USER ACCOUNT DELETING
-router.delete('/settings/:userId', async (req, res) => {
+router.delete('/settings/delete/:userId', async (req, res) => {
   try {
     const userId = req.params.userId
 
@@ -445,15 +445,85 @@ router.delete('/settings/:userId', async (req, res) => {
     if (user) {
       await Images.deleteOne({ userId: userId })
     }
-    res.status(200).json({ message: 'User and associated chats deleted successfully' })
+    res.status(200).json({ message: 'User and associated data deleted successfully' })
   } catch (error) {
     console.error('Error deleting user:', error)
+    res.status(500).json({ message: 'Failed to delete user. Please try again later.' })
+  }
+})
+
+// UPDATING USER EMAIL
+router.put('/settings/email/:userId', [
+  body('email')
+      .isEmail()
+      .normalizeEmail()
+      .withMessage('Invalid email address.')
+  ], async (req, res) => {
+    const userId = req.params.userId
+    const { email } = req.body
+
+  try {
+    // Validate email
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: errors.array()[0].msg })
+    }
+
+    // Check if email already exists
+    const existingUser = await Users.findOne({ email })
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already in use' })
+    }
+
+    const user = await Users.findById(userId)
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    user.email = email
+    await user.save()
+
+    res.json({ message: 'Email updated successfully', user })
+  } catch (error) {
+    console.error('Error updating email:', error)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+})
+
+// PUT UPDATING USER AGE
+router.put('/settings/age/:userId', [
+  body('age')
+      .notEmpty()
+      .withMessage('Age is required')
+      .isInt({ min: 18, max: 100 })
+      .withMessage('Enter valid positive age')
+], async (req, res) => {
+  const userId = req.params.userId
+  const { age } = req.body
+
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ message: errors.array()[0].msg })
+    }
+    
+    const user = await Users.findById(userId)
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' })
+    }
+
+    user.age = age
+    await user.save()
+
+    res.json({ message: 'Age updated successfully', user })
+  } catch (error) {
+    console.error('Error updating age:', error)
     res.status(500).json({ message: 'Internal server error' })
   }
 })
 
 // HANDLING THE ADMIN USER FETCHING
-router.get('/admin/dashboard', async function(req, res, next){
+router.get('/admin/dashboard', validateToken, async function(req, res, next){
   try {
     // Fetch all users from the database
     const users = await Users.find({ isAdmin: false })
@@ -464,8 +534,8 @@ router.get('/admin/dashboard', async function(req, res, next){
   }
 })
 
-// DELETE user by ID
-router.delete('/admin/users/:userId', async (req, res) => {
+// DELETE USER BY ID ADMIN
+router.delete('/admin/users/:userId', validateToken, async (req, res) => {
   try {
     const userId = req.params.userId
 
@@ -483,7 +553,6 @@ router.delete('/admin/users/:userId', async (req, res) => {
       await Images.deleteOne({ userId: userId })
     }
 
-
     res.status(200).json({ message: 'User and associated chats deleted successfully' })
   } catch (error) {
     console.error('Error deleting user:', error)
@@ -492,7 +561,7 @@ router.delete('/admin/users/:userId', async (req, res) => {
 })
 
 // PUT update user bio by ID
-router.put('/admin/users/:userId/bio', async (req, res) => {
+router.put('/admin/users/:userId/bio', validateToken, async (req, res) => {
   try {
     const userId = req.params.userId
     const { bio } = req.body

@@ -21,7 +21,8 @@ const Profile = () => {
             try {
                 // Check if the user is authenticated to display the page or not
                 const authToken = localStorage.getItem('authToken')
-                if (authToken) {
+                const isAdmin = localStorage.getItem('isAdmin')
+                if (authToken && isAdmin !== 'true') {
                     await fetchUserData()
                     setAuthenticated(true)
                 } else {
