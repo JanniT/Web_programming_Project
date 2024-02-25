@@ -203,7 +203,7 @@ const Profile = () => {
                                     />
                                     <p>Characters Left: {bioCharactersLeft}</p>
                                     <button className='edit_button' onClick={handleSaveClick}>Save</button>
-                                    <button className='edit_button' onClick={handleCancelClick}>Cancel</button>
+                                    <button className='cancel_button' onClick={handleCancelClick}>Cancel</button>
                                 </>
                             ) : (
                                 <>

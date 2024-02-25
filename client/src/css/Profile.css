@@ -28,7 +28,8 @@
     margin-top: 10px;
 }
 
-.edit_button {
+.edit_button,
+.cancel_button {
     color: #fff;
     background-color: #fff;
     font-size: 20px;

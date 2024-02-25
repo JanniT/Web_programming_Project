@@ -133,7 +133,7 @@ const Register = () => {
 
                 <button id="form_button" className="button_main" type="submit">Register</button>
 
-                {errorMessage && (<div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>)}
+                {errorMessage && (<div className="error-message" style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>)}
             </form>
         </div>
         </>
